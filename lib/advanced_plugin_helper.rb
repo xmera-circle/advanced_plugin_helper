@@ -26,13 +26,34 @@ require 'advanced_plugin_helper/extensions/controller_patch'
 module AdvancedPluginHelper
   class << self
     def setup
+      autoload_presenters
       patch_controller
+    end
+
+    private
+
+    def autoload_presenters
+      plugin_dirs.each do |plugin_dir|
+        next unless Dir.exist?(plugin_presenters_dir(plugin_dir))
+
+        Rails.application.configure do
+          config.autoload_paths << AdvancedPluginHelper.send(:plugin_presenters_dir, plugin_dir)
+        end
+      end
+    end
+
+    def plugin_dirs
+      Dir.entries(Rails.root.join('plugins')) - %w[. .. README]
+    end
+
+    def plugin_presenters_dir(plugin)
+      Rails.root.join('plugins', plugin, 'app', 'presenters')
     end
 
     def patch_controller
       Rails.configuration.to_prepare do
         patch = AdvancedPluginHelper::Extensions::ControllerPatch
-        AdvancedPluginHelper.patch_klasses.each do |klass|
+        AdvancedPluginHelper.send(:patch_klasses).each do |klass|
           klass.include(patch)
         end
       end
