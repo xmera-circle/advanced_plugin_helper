@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * BasePresenter
+* autoload path for app/presenters for all registered plugins
 
 ### Changed
 
