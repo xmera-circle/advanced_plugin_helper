@@ -26,7 +26,8 @@ module AdvancedPluginHelper
     def setup
       autoload_presenters
       patches.each do |patch|
-        AdvancedPluginHelper::Patch.register(send("#{patch}_controller_patch"))
+        data = send("#{patch}_controller_patch")
+        AdvancedPluginHelper::Patch.register(data)
       end
       AdvancedPluginHelper::Patch.apply
     end
@@ -62,6 +63,8 @@ module AdvancedPluginHelper
     end
 
     def autoload_presenters
+      return if Rails.version >= '6'
+
       plugin_dirs.each do |plugin_dir|
         next unless Dir.exist?(plugin_presenters_dir(plugin_dir))
 

@@ -21,7 +21,7 @@
 module AdvancedPluginHelper
   module Patch
     ##
-    # Redmine patch registry holding patch data of all plugins registered 
+    # Redmine patch registry holding patch data of all plugins registered
     # here.
     #
     class Registry

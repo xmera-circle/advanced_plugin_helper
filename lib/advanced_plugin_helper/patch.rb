@@ -34,7 +34,7 @@ module AdvancedPluginHelper
       #   data = { klass: Issue, patch: MyPlugin::Extensions::IssuePatch, strategy: :prepend }
       #
       def register(data)
-        AdvancedPluginHelper::Patch::Registry.add(data)
+        AdvancedPluginHelper::Patch::Registry.add(**data)
       end
 
       def apply

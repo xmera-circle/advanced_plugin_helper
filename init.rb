@@ -18,13 +18,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require 'advanced_plugin_helper'
+require File.expand_path('lib/advanced_plugin_helper', __dir__)
 
 Redmine::Plugin.register :advanced_plugin_helper do
   name 'Advanced Plugin Helper'
   author 'Liane Hampe, xmera Solutions GmbH'
   description 'Encapsulate presentation logic in PORO'
-  version '0.1.0'
+  version '0.2.0'
   url 'https://circle.xmera.de/projects/advanced-plugin-helper'
   author_url 'https://github.com/liaham'
 
