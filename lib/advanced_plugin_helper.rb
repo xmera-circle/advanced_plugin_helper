@@ -24,7 +24,7 @@
 module AdvancedPluginHelper
   class << self
     def setup
-      autoload_presenters
+      AdvancedPluginHelper::Presenters.autoload
       patches.each do |patch|
         data = send("#{patch}_controller_patch")
         AdvancedPluginHelper::Patch.register(data)
@@ -60,26 +60,6 @@ module AdvancedPluginHelper
       { klass: QueriesController,
         patch: AdvancedPluginHelper::PresentersHelper,
         strategy: :helper }
-    end
-
-    def autoload_presenters
-      return if Rails.version >= '6'
-
-      plugin_dirs.each do |plugin_dir|
-        next unless Dir.exist?(plugin_presenters_dir(plugin_dir))
-
-        Rails.application.configure do
-          config.autoload_paths << AdvancedPluginHelper.send(:plugin_presenters_dir, plugin_dir)
-        end
-      end
-    end
-
-    def plugin_dirs
-      Rails.root.join('plugins').entries - %w[. .. README]
-    end
-
-    def plugin_presenters_dir(plugin)
-      Rails.root.join('plugins', plugin, 'app', 'presenters')
     end
   end
 end
