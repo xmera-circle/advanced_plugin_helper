@@ -80,7 +80,7 @@ module AdvancedPluginHelper
 
       ##
       # Apply patches when running with Rails 5.
-      #
+      # :reek:UncommunicativeModuleName
       class V5 < Base
         def self.apply
           Rails.configuration.to_prepare do
@@ -91,7 +91,7 @@ module AdvancedPluginHelper
 
       ##
       # Apply patches when running with Rails 6.
-      #
+      # :reek:UncommunicativeModuleName
       class V6 < Base
         def self.apply
           Class.new(Redmine::Hook::ViewListener) do

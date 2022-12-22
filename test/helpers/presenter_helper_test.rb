@@ -53,6 +53,7 @@ module AdvancedPluginHelper
 
     private
 
+    # :reek:UncommunicativeVariableName
     def to_class(klass)
       return if %w[. ..].include?(klass)
 
