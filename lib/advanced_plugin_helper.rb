@@ -43,7 +43,7 @@ module AdvancedPluginHelper
     end
 
     def plugin_dirs
-      Dir.entries(Rails.root.join('plugins')) - %w[. .. README]
+      Rails.root.join('plugins').entries - %w[. .. README]
     end
 
     def plugin_presenters_dir(plugin)
