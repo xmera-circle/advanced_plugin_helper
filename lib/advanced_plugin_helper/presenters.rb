@@ -19,25 +19,37 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 module AdvancedPluginHelper
-  module Patch
-    ##
-    # Holds the data required for applying a Redmine patch.
-    #
-    class Data
-      STRATEGIES = %i[prepend include helper].freeze
+  ##
+  # Will add for all plugins presenters directory (if any) to
+  # autoload path when using Rails 5.
+  #
+  module Presenters
+    class << self
+      def autoload
+        return if Rails.version >= '6'
 
-      attr_reader :klass, :patch, :strategy
+        plugin_dirs.each do |plugin_dir|
+          next unless Dir.exist?(send(:path, plugin_dir))
 
-      def initialize(**data)
-        self.klass = data[:klass]
-        self.patch = data[:patch]
-        strategy = data[:strategy]
-        self.strategy = STRATEGIES.include?(strategy&.to_sym) ? strategy : :include
+          autoload_path(plugin_dir)
+        end
+      end
+
+      def path(plugin)
+        Rails.root.join('plugins', plugin, 'app', 'presenters')
       end
 
       private
 
-      attr_writer :klass, :patch, :strategy
+      def autoload_path(plugin_dir)
+        Rails.application.configure do
+          config.autoload_paths << AdvancedPluginHelper::Presenters.path(plugin_dir)
+        end
+      end
+
+      def plugin_dirs
+        Rails.root.join('plugins').entries - %w[. .. README]
+      end
     end
   end
 end

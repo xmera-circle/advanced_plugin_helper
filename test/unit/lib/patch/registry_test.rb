@@ -35,7 +35,7 @@ module AdvancedPluginHelper
 
     test 'should register data' do
       data = { klass: TestKlass, patch: TestPatch, strategy: nil }
-      AdvancedPluginHelper::Patch::Registry.add(data)
+      AdvancedPluginHelper::Patch::Registry.add(**data)
       first_data = AdvancedPluginHelper::Patch::Registry.all.first
       assert_equal data[:klass], first_data.klass
       assert_equal data[:patch], first_data.patch

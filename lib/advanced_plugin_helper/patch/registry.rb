@@ -25,10 +25,10 @@ module AdvancedPluginHelper
     # here.
     #
     class Registry
-      def self.add(klass:, patch:, strategy:)
-        all << AdvancedPluginHelper::Patch::Data.new(klass: klass,
-                                                     patch: patch,
-                                                     strategy: strategy)
+      def self.add(**data)
+        all << AdvancedPluginHelper::Patch::Data.new(klass: data[:klass],
+                                                     patch: data[:patch],
+                                                     strategy: data[:strategy])
       end
 
       def self.all
