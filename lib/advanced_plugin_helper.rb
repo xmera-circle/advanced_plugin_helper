@@ -18,8 +18,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require 'advanced_plugin_helper/extensions/controller_patch'
-
 ##
 # Setup methods for this plugin.
 #
@@ -27,12 +25,46 @@ module AdvancedPluginHelper
   class << self
     def setup
       autoload_presenters
-      patch_controller
+      patches.each do |patch|
+        data = send("#{patch}_controller_patch")
+        AdvancedPluginHelper::Patch.register(data)
+      end
+      AdvancedPluginHelper::Patch.apply
     end
 
     private
 
+    def patches
+      %w[application settings projects queries]
+    end
+
+    def application_controller_patch
+      { klass: ApplicationController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
+    end
+
+    def settings_controller_patch
+      { klass: SettingsController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
+    end
+
+    def projects_controller_patch
+      { klass: ProjectsController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
+    end
+
+    def queries_controller_patch
+      { klass: QueriesController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
+    end
+
     def autoload_presenters
+      return if Rails.version >= '6'
+
       plugin_dirs.each do |plugin_dir|
         next unless Dir.exist?(plugin_presenters_dir(plugin_dir))
 
@@ -43,24 +75,11 @@ module AdvancedPluginHelper
     end
 
     def plugin_dirs
-      Dir.entries(Rails.root.join('plugins')) - %w[. .. README]
+      Rails.root.join('plugins').entries - %w[. .. README]
     end
 
     def plugin_presenters_dir(plugin)
       Rails.root.join('plugins', plugin, 'app', 'presenters')
-    end
-
-    def patch_controller
-      Rails.configuration.to_prepare do
-        patch = AdvancedPluginHelper::Extensions::ControllerPatch
-        AdvancedPluginHelper.send(:patch_klasses).each do |klass|
-          klass.include(patch)
-        end
-      end
-    end
-
-    def patch_klasses
-      [ApplicationController, SettingsController, ProjectsController, QueriesController]
     end
   end
 end

@@ -18,17 +18,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require File.expand_path('lib/advanced_plugin_helper', __dir__)
+module AdvancedPluginHelper
+  module Patch
+    ##
+    # Redmine patch registry holding patch data of all plugins registered
+    # here.
+    #
+    class Registry
+      def self.add(klass:, patch:, strategy:)
+        all << AdvancedPluginHelper::Patch::Data.new(klass: klass,
+                                                     patch: patch,
+                                                     strategy: strategy)
+      end
 
-Redmine::Plugin.register :advanced_plugin_helper do
-  name 'Advanced Plugin Helper'
-  author 'Liane Hampe, xmera Solutions GmbH'
-  description 'Encapsulate presentation logic in PORO'
-  version '0.2.0'
-  url 'https://circle.xmera.de/projects/advanced-plugin-helper'
-  author_url 'https://github.com/liaham'
+      def self.all
+        @all ||= []
+      end
 
-  requires_redmine version_or_higher: '4.2.0'
+      def self.clear
+        all.clear
+      end
+    end
+  end
 end
-
-AdvancedPluginHelper.setup

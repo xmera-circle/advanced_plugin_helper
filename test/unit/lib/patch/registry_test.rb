@@ -18,17 +18,28 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require File.expand_path('lib/advanced_plugin_helper', __dir__)
+require File.expand_path('../../../test_helper', __dir__)
 
-Redmine::Plugin.register :advanced_plugin_helper do
-  name 'Advanced Plugin Helper'
-  author 'Liane Hampe, xmera Solutions GmbH'
-  description 'Encapsulate presentation logic in PORO'
-  version '0.2.0'
-  url 'https://circle.xmera.de/projects/advanced-plugin-helper'
-  author_url 'https://github.com/liaham'
+module AdvancedPluginHelper
+  class TestKlass; end
+  module TestPatch; end
 
-  requires_redmine version_or_higher: '4.2.0'
+  class RegistryTest < ActiveSupport::TestCase
+    setup do
+      AdvancedPluginHelper::Patch::Registry.clear
+    end
+
+    test 'should return empty array when nothing registered' do
+      assert_equal [], AdvancedPluginHelper::Patch::Registry.all
+    end
+
+    test 'should register data' do
+      data = { klass: TestKlass, patch: TestPatch, strategy: nil }
+      AdvancedPluginHelper::Patch::Registry.add(data)
+      first_data = AdvancedPluginHelper::Patch::Registry.all.first
+      assert_equal data[:klass], first_data.klass
+      assert_equal data[:patch], first_data.patch
+      assert_equal :include, first_data.strategy
+    end
+  end
 end
-
-AdvancedPluginHelper.setup
