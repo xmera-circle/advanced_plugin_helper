@@ -55,16 +55,26 @@ module AdvancedPluginHelper
       # The base interface declaring the required methods.
       #
       class Base
-        def self.apply(_data)
-          raise NotImplementedError, "#{self.class.name}##{method_name} needs to be implemented"
-        end
+        class << self
+          def apply
+            raise NotImplementedError, "#{self.class.name}##{method_name} needs to be implemented"
+          end
 
-        def self.add_patches(data)
-          patch = data.patch
-          klass = data.klass
-          return if klass.included_modules.include?(patch)
+          def add_registered_patches
+            AdvancedPluginHelper::Patch::Registry.all.each do |data|
+              add_patch(data)
+            end
+          end
 
-          klass.send(data.strategy, patch)
+          private
+
+          def add_patch(data)
+            patch = data.patch
+            klass = data.klass
+            return if klass.included_modules.include?(patch)
+
+            klass.send(data.strategy, patch)
+          end
         end
       end
 
@@ -72,9 +82,9 @@ module AdvancedPluginHelper
       # Apply patches when running with Rails 5.
       #
       class V5 < Base
-        def self.apply(data)
+        def self.apply
           Rails.configuration.to_prepare do
-            add_patches(data)
+            Base.add_registered_patches
           end
         end
       end
@@ -83,8 +93,12 @@ module AdvancedPluginHelper
       # Apply patches when running with Rails 6.
       #
       class V6 < Base
-        def self.apply(data)
-          add_patches(data)
+        def self.apply
+          Class.new(Redmine::Hook::ViewListener) do
+            def after_plugins_loaded(_context = {})
+              Base.add_registered_patches
+            end
+          end
         end
       end
     end

@@ -38,7 +38,7 @@ module AdvancedPluginHelper
     test 'should add patches' do
       data = AdvancedPluginHelper::Patch::Data.new({ klass: TestKlass, patch: TestPatch, strategy: nil })
       assert_not data.klass.included_modules.include?(data.patch)
-      AdvancedPluginHelper::Patch::Compatability::Base.add_patches(data)
+      AdvancedPluginHelper::Patch::Compatability::Base.send(:add_patch, data)
       assert data.klass.included_modules.include?(data.patch)
     end
   end

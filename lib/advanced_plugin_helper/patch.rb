@@ -39,10 +39,8 @@ module AdvancedPluginHelper
 
       def apply
         version = major(Rails.version)
-        AdvancedPluginHelper::Patch::Registry.all.each do |data|
-          klass = AdvancedPluginHelper::Patch::Compatability.find(version)
-          klass.apply(data)
-        end
+        klass = AdvancedPluginHelper::Patch::Compatability.find(version)
+        klass.apply
       end
 
       private

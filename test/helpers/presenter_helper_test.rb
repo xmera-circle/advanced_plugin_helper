@@ -25,15 +25,19 @@ module AdvancedPluginHelper
     include PresentersHelper
 
     def setup
-      @patch = AdvancedPluginHelper::Extensions::ControllerPatch
+      @patch = AdvancedPluginHelper::PresentersHelper
+      data = AdvancedPluginHelper::Patch::Data.new(klass: ApplicationController,
+                                                   patch: @patch,
+                                                   strategy: :helper)
+      AdvancedPluginHelper::Patch::Compatability::Base.send(:add_patch, data)
     end
 
     test 'should find PresentersHelper in ApplicationController' do
-      assert ApplicationController.included_modules.include?(@patch)
+      assert ApplicationController.helpers.respond_to?(:show)
     end
 
     test 'should find PresentersHelper in all ApplicationController subclasses' do
-      controller_path = Rails.root.join('app', 'controllers')
+      controller_path = Rails.root.join('app/controllers')
       controller_files = Dir.entries(controller_path)
       controller_klasses = controller_files.map do |file_name|
         File.basename(file_name, '.rb')

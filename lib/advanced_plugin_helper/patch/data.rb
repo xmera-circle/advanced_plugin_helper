@@ -24,7 +24,7 @@ module AdvancedPluginHelper
     # Holds the data required for applying a Redmine patch.
     #
     class Data
-      STRATEGIES = %i[prepend include].freeze
+      STRATEGIES = %i[prepend include helper].freeze
 
       attr_reader :klass, :patch, :strategy
 
