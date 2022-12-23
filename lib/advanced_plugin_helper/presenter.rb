@@ -23,8 +23,37 @@ module AdvancedPluginHelper
   # Will add for all plugins presenters directory (if any) to
   # autoload path when using Rails 5.
   #
-  module Presenters
+  module Presenter
     class << self
+      ##
+      # Register presenter class names in order to add them to the dictionary of
+      # registered_presenters.
+      #
+      # @param presenter_class_name [Class] The full name of the presenter class, i.e., with namespaces.
+      # @param for_object_classes [Array(Class)] A list with object classes the presenter belongs to.
+      #
+      # @example Registering a presenter for a single class
+      #
+      # # lib/my_custom_plugin.rb
+      # module MyCustomPlugin
+      #   class << self
+      #    def setup
+      #      register 'MyCustomPlugin::IssuePresenter', 'Issue'
+      #    end
+      #     ...
+      #   end
+      # end
+      #
+      def register(presenter_class_name, *for_object_classes)
+        AdvancedPluginHelper::BasePresenter.register(presenter_class_name, *for_object_classes)
+      end
+
+      ##
+      # Will add all available presenters directories of plugins to Rails
+      # autoload paths.
+      #
+      # @note Only necessary for Rails version < 6.
+      #
       def autoload
         return if Rails.version >= '6'
 
@@ -43,7 +72,7 @@ module AdvancedPluginHelper
 
       def autoload_path(plugin_dir)
         Rails.application.configure do
-          config.autoload_paths << AdvancedPluginHelper::Presenters.path(plugin_dir)
+          config.autoload_paths << AdvancedPluginHelper::Presenter.path(plugin_dir)
         end
       end
 

@@ -24,7 +24,7 @@
 module AdvancedPluginHelper
   class << self
     def setup
-      AdvancedPluginHelper::Presenters.autoload
+      AdvancedPluginHelper::Presenter.autoload
       patches.each do |patch|
         data = send("#{patch}_controller_patch")
         AdvancedPluginHelper::Patch.register(data)
