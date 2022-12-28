@@ -38,7 +38,7 @@ module AdvancedPluginHelper
       # module MyCustomPlugin
       #   class << self
       #    def setup
-      #      register 'MyCustomPlugin::IssuePresenter', 'Issue'
+      #      AdvancedPluginHelper::Presenter.register('MyCustomPlugin::IssuePresenter', 'Issue')
       #    end
       #     ...
       #   end

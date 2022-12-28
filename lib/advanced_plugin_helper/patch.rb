@@ -28,10 +28,11 @@ module AdvancedPluginHelper
       # @param data [Hash] Required keys are :klass, :patch, :strategy
       #                    where :klass is the class which should be patched
       #                    and :patch is the patch for doing so and :strategy
-      #                    describes whether to :include or :prepend the patch.
+      #                    describes whether to :include, :prepend or
+      #                    add the patch as :helper
       #
       # @example
-      #   data = { klass: Issue, patch: MyPlugin::Extensions::IssuePatch, strategy: :prepend }
+      #   data = { klass: Issue, patch: MyPlugin::Extensions::IssuePatch, strategy: :include }
       #
       def register(data)
         AdvancedPluginHelper::Patch::Registry.add(**data)
