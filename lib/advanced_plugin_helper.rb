@@ -35,7 +35,13 @@ module AdvancedPluginHelper
     private
 
     def patches
-      %w[application settings projects queries]
+      %w[mailer application settings projects queries]
+    end
+
+    def mailer_controller_patch
+      { klass: ActionMailer::Base,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
     end
 
     def application_controller_patch
