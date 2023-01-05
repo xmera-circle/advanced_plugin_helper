@@ -2,7 +2,7 @@
 
 # This file is part of the Advanced Plugin Helper plugin.
 #
-# Copyright (C) 2022 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
+# Copyright (C) 2022-2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
 #
 # This plugin program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,17 +19,25 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 module AdvancedPluginHelper
-  module Extensions
+  module Patch
     ##
-    # Prepares the PresentersHelper to be added to an arbitray controller.
-    # @see AdvancedPluginHelper#patch_controller.
+    # Holds the data required for applying a Redmine patch.
     #
-    module ControllerPatch
-      def self.included(base)
-        base.class_eval do
-          base.helper AdvancedPluginHelper::PresentersHelper
-        end
+    class Data
+      STRATEGIES = %i[prepend include helper].freeze
+
+      attr_reader :klass, :patch, :strategy
+
+      def initialize(**data)
+        self.klass = data[:klass]
+        self.patch = data[:patch]
+        strategy = data[:strategy]
+        self.strategy = STRATEGIES.include?(strategy&.to_sym) ? strategy : :include
       end
+
+      private
+
+      attr_writer :klass, :patch, :strategy
     end
   end
 end

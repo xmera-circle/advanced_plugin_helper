@@ -2,7 +2,7 @@
 
 # This file is part of the Advanced Plugin Helper plugin.
 #
-# Copyright (C) 2022 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
+# Copyright (C) 2022-2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
 #
 # This plugin program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -58,18 +58,6 @@ module AdvancedPluginHelper
     # @param presenter_class_name [Class] The full name of the presenter class, i.e., with namespaces.
     # @param for_object_classes [Array(Class)] A list with object classes the presenter belongs to.
     #
-    # @example Registering a presenter for a single class
-    #
-    # # lib/my_custom_plugin.rb
-    # module MyCustomPlugin
-    #   class << self
-    #    def setup
-    #      register 'MyCustomPlugin::IssuePresenter', 'Issue'
-    #    end
-    #     ...
-    #   end
-    # end
-    #
     def self.register(presenter_class_name, *for_object_classes)
       for_object_classes = [presenter_class_name.sub(/Presenter$/, '')] unless for_object_classes.any?
       for_object_classes.each do |name|
@@ -77,6 +65,11 @@ module AdvancedPluginHelper
       end
     end
 
+    ##
+    # @param object [Model object] The object which uses the presenter.
+    #
+    # @note This method is used in app/helpers/advanced_plugin_helper/presenters_helper.rb.
+    #
     def self.klass(object)
       object_klass = object.class
       registered_presenters[object_klass.to_s] || "#{object_klass}Presenter".constantize

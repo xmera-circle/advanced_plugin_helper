@@ -18,5 +18,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-# Load the Redmine helper
-require File.expand_path('../../../test/test_helper', __dir__)
+require File.expand_path('../../../test_helper', __dir__)
+
+module AdvancedPluginHelper
+  class PatchTest < ActiveSupport::TestCase
+    test 'should respond to register' do
+      assert AdvancedPluginHelper::Patch.respond_to?(:register)
+    end
+
+    test 'should respond to apply' do
+      assert AdvancedPluginHelper::Patch.respond_to?(:apply)
+    end
+  end
+end

@@ -2,7 +2,7 @@
 
 # This file is part of the Advanced Plugin Helper plugin.
 #
-# Copyright (C) 2022 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
+# Copyright (C) 2022-2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
 #
 # This plugin program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,49 +18,54 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require 'advanced_plugin_helper/extensions/controller_patch'
-
 ##
 # Setup methods for this plugin.
 #
 module AdvancedPluginHelper
   class << self
     def setup
-      autoload_presenters
-      patch_controller
+      AdvancedPluginHelper::Presenter.autoload
+      patches.each do |patch|
+        data = send("#{patch}_controller_patch")
+        AdvancedPluginHelper::Patch.register(data)
+      end
+      AdvancedPluginHelper::Patch.apply
     end
 
     private
 
-    def autoload_presenters
-      plugin_dirs.each do |plugin_dir|
-        next unless Dir.exist?(plugin_presenters_dir(plugin_dir))
-
-        Rails.application.configure do
-          config.autoload_paths << AdvancedPluginHelper.send(:plugin_presenters_dir, plugin_dir)
-        end
-      end
+    def patches
+      %w[mailer application settings projects queries]
     end
 
-    def plugin_dirs
-      Dir.entries(Rails.root.join('plugins')) - %w[. .. README]
+    def mailer_controller_patch
+      { klass: ActionMailer::Base,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
     end
 
-    def plugin_presenters_dir(plugin)
-      Rails.root.join('plugins', plugin, 'app', 'presenters')
+    def application_controller_patch
+      { klass: ApplicationController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
     end
 
-    def patch_controller
-      Rails.configuration.to_prepare do
-        patch = AdvancedPluginHelper::Extensions::ControllerPatch
-        AdvancedPluginHelper.send(:patch_klasses).each do |klass|
-          klass.include(patch)
-        end
-      end
+    def settings_controller_patch
+      { klass: SettingsController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
     end
 
-    def patch_klasses
-      [ApplicationController, SettingsController, ProjectsController, QueriesController]
+    def projects_controller_patch
+      { klass: ProjectsController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
+    end
+
+    def queries_controller_patch
+      { klass: QueriesController,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
     end
   end
 end

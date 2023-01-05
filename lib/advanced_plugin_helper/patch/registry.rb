@@ -18,5 +18,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-# Load the Redmine helper
-require File.expand_path('../../../test/test_helper', __dir__)
+module AdvancedPluginHelper
+  module Patch
+    ##
+    # Redmine patch registry holding patch data of all plugins registered
+    # here.
+    #
+    class Registry
+      def self.add(**data)
+        all << AdvancedPluginHelper::Patch::Data.new(klass: data[:klass],
+                                                     patch: data[:patch],
+                                                     strategy: data[:strategy])
+      end
+
+      def self.all
+        @all ||= []
+      end
+
+      def self.clear
+        all.clear
+      end
+    end
+  end
+end

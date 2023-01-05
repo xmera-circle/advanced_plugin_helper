@@ -20,23 +20,35 @@
 
 module AdvancedPluginHelper
   ##
-  # Initializes presenters
+  # AdvancedPluginHelper::Patch is the API to be used by Redmine plugin authors.
   #
-  module PresentersHelper
-    ##
-    # Provides an interface for using presenters in views.
-    #
-    # @note redmine_extensions gem uses a similar approach
-    # ApplicationHelper#present. Therefore, this needs to be
-    # named PresenterHelper#show.
-    #
-    # @example show(@sync_param).tracker_list
-    #
-    def show(object, klass = nil)
-      klass ||= BasePresenter.klass(object)
-      presenter = klass.new(object, self)
-      yield presenter if block_given?
-      presenter
+  module Patch
+    class << self
+      ##
+      # @param data [Hash] Required keys are :klass, :patch, :strategy
+      #                    where :klass is the class which should be patched
+      #                    and :patch is the patch for doing so and :strategy
+      #                    describes whether to :include, :prepend or
+      #                    add the patch as :helper
+      #
+      # @example
+      #   data = { klass: Issue, patch: MyPlugin::Extensions::IssuePatch, strategy: :include }
+      #
+      def register(data)
+        AdvancedPluginHelper::Patch::Registry.add(**data)
+      end
+
+      def apply
+        version = major(Rails.version)
+        klass = AdvancedPluginHelper::Patch::Compatability.find(version)
+        klass.apply
+      end
+
+      private
+
+      def major(version)
+        version.to_s.split('.')[0]
+      end
     end
   end
 end
