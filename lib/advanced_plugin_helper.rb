@@ -2,7 +2,7 @@
 
 # This file is part of the Advanced Plugin Helper plugin.
 #
-# Copyright (C) 2022 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
+# Copyright (C) 2022-2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
 #
 # This plugin program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,13 @@ module AdvancedPluginHelper
     private
 
     def patches
-      %w[application settings projects queries]
+      %w[mailer application settings projects queries]
+    end
+
+    def mailer_controller_patch
+      { klass: ActionMailer::Base,
+        patch: AdvancedPluginHelper::PresentersHelper,
+        strategy: :helper }
     end
 
     def application_controller_patch

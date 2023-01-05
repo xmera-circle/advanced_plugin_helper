@@ -52,7 +52,7 @@ This project is maintained by xmera Solutions GmbH.
 
 ## Support
 
-For any question on the usage of this plugin please use the [xmera Circle » Community Portal](https://circle.xmera.de). If you found a problem with the software, please create an issue on xmera Circle or GitHub. 
+For any question on the usage of this plugin please use the [xmera Circle » Community Portal](https://circle.xmera.de). If you found a problem with the software, please create an issue on [xmera Circle](https://circle.xmera.de) or [GitHub](https://github.com/xmera-circle/advanced_plugin_helper).
 
 If you are a xmera Solutions customer you may alternatively forward your issue to the xmera Service Customer Portal.
 
