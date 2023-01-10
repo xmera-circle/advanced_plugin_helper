@@ -39,10 +39,10 @@ module AdvancedPluginHelper
   # end
   #
   # In order to configure sender and recipients set the corresponding env vars:
-  # EXCEPTION_NOTIFIER_SENDER
-  # EXCEPTION_NOTIFIER_RECIPIENTS
+  # EXCEPTION_NOTIFIER_SENDER (default: Setting.mail_from as set in Administration » Setting » Email notifications)
+  # EXCEPTION_NOTIFIER_RECIPIENTS (default: Mail addresses of all admins)
   #
-  # You can also disable the notifier via EXCEPTION_NOTIFIER_DISABLED.
+  # You can also disable the notifier via EXCEPTION_NOTIFIER_DISABLED (default: false).
   #
   module Notifier
     class << self
