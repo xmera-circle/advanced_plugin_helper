@@ -2,9 +2,9 @@
 
 Encapsulate presentation logic and Redmine patch management in PORO
 
-![Redmine Plugin Version](https://img.shields.io/badge/Redmine_Plugin-v0.2.0-red) ![Redmine Version](https://img.shields.io/badge/Redmine-v5.0.x-blue) ![Language Support](https://img.shields.io/badge/Languages-en,_de-green) ![Version Stage](https://img.shields.io/badge/Stage-release-important)
+![Redmine Plugin Version](https://img.shields.io/badge/Redmine_Plugin-v0.3.0-red) ![Redmine Version](https://img.shields.io/badge/Redmine-v5.0.x-blue) ![Language Support](https://img.shields.io/badge/Languages-en,_de-green) ![Version Stage](https://img.shields.io/badge/Stage-release-important)
 
-The Advanced Plugin Helper plugin is a Redmine plugin for developers. It is helping to keep Rails helper and views light in favour of encapsulating presentation login in plain old ruby classes (PORO) and provides a Patch API to easily register Redmine patches for Redmine 4 or 5.
+The Advanced Plugin Helper plugin is a Redmine plugin for developers. It is helping to keep Rails helper and views light in favour of encapsulating presentation login in plain old ruby classes (PORO). It also provides a Patch API to easily register Redmine patches for Redmine 4 or 5 as well as an exception notifier.
 
 ---
 
@@ -27,6 +27,26 @@ Register your Redmine patches and make sure they will be loaded when the plugin 
 ```ruby
 data = { klass: Issue, patch: MyRedminePlugin::Extensions::IssuePatch, strategy: :include }
 AdvancedPluginHelper::Patch.register(data)
+```
+
+### Exception Notifier
+
+Enable the email notifier in your config/additional_environment.rb:
+
+```ruby
+require File.expand_path('plugins/advanced_plugin_helper/lib/advanced_plugin_helper/notifier', __dir__)
+require File.expand_path('plugins/advanced_plugin_helper/lib/exception_notifier/custom_mail_notifier', __dir__)
+require 'exception_notification/rails'
+
+ExceptionNotification.configure do |config|
+  if AdvancedPluginHelper::Notifier.email_delivery_enabled?
+    config.add_notifier :custom_mail, AdvancedPluginHelper::Notifier.custom_mail
+    config.error_grouping = AdvancedPluginHelper::Notifier.error_grouping
+    config.ignore_if do |exception, options|
+      AdvancedPluginHelper::Notifier.disabled?
+    end
+  end
+end
 ```
 
 ## Installation

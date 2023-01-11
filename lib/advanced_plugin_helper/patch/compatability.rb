@@ -23,6 +23,7 @@ module AdvancedPluginHelper
     ##
     # The Compatability ensures the appropriate loading of patches in dependence
     # of the current Rails and Redmine version.
+    # It assumes Rails.autoloaders.zeitwerk_enabled? ==> true.
     #
     module Compatability
       class << self

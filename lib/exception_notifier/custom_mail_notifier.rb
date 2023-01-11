@@ -18,17 +18,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require File.expand_path('lib/advanced_plugin_helper', __dir__)
+module ExceptionNotifier
+  ##
+  # Custom mail notifier supporting procs for sender and recipients.
+  #
+  class CustomMailNotifier < EmailNotifier
+    def call(exception, options = {})
+      @base_options[:sender_address] = try_proc(@base_options[:sender_address])
+      @base_options[:exception_recipients] = try_proc(@base_options[:exception_recipients])
+      super
+    end
 
-Redmine::Plugin.register :advanced_plugin_helper do
-  name 'Advanced Plugin Helper'
-  author 'Liane Hampe, xmera Solutions GmbH'
-  description 'Encapsulate presentation logic in PORO'
-  version '0.3.0'
-  url 'https://circle.xmera.de/projects/advanced-plugin-helper'
-  author_url 'https://github.com/liaham'
-
-  requires_redmine version_or_higher: '4.2.0'
+    def try_proc(option)
+      option.respond_to?(:call) ? option.call : option
+    end
+  end
 end
-
-AdvancedPluginHelper.setup
