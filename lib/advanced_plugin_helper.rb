@@ -31,12 +31,12 @@ module AdvancedPluginHelper
       AdvancedPluginHelper::Patch.apply
     end
 
-    private
-
     def klasses
       [ActionMailer::Base, ApplicationController, SettingsController,
        ProjectsController, QueriesController, NewsController]
     end
+
+    private
 
     def data_of(klass)
       { klass: klass,
