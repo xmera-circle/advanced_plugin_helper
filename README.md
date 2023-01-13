@@ -20,6 +20,15 @@ Move your business logic from your views to presenter classes and integrate the 
 <%= show(@my_model).helper_method_for_my_model %>
 ```
 
+The `AdvancedPluginHelper::PresentersHelper` is added as helper to these classes by default:
+
+* ActionMailer::Base, 
+* ApplicationController, 
+* SettingsController,
+* ProjectsController,
+* QueriesController, 
+* NewsController.
+
 ### Redmine Patches
 
 Register your Redmine patches and make sure they will be loaded when the plugin is registered.

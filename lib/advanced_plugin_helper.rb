@@ -25,45 +25,21 @@ module AdvancedPluginHelper
   class << self
     def setup
       AdvancedPluginHelper::Presenter.autoload
-      patches.each do |patch|
-        data = send("#{patch}_controller_patch")
-        AdvancedPluginHelper::Patch.register(data)
+      klasses.each do |klass|
+        AdvancedPluginHelper::Patch.register(data_of(klass))
       end
       AdvancedPluginHelper::Patch.apply
     end
 
+    def klasses
+      [ActionMailer::Base, ApplicationController, SettingsController,
+       ProjectsController, QueriesController, NewsController]
+    end
+
     private
 
-    def patches
-      %w[mailer application settings projects queries]
-    end
-
-    def mailer_controller_patch
-      { klass: ActionMailer::Base,
-        patch: AdvancedPluginHelper::PresentersHelper,
-        strategy: :helper }
-    end
-
-    def application_controller_patch
-      { klass: ApplicationController,
-        patch: AdvancedPluginHelper::PresentersHelper,
-        strategy: :helper }
-    end
-
-    def settings_controller_patch
-      { klass: SettingsController,
-        patch: AdvancedPluginHelper::PresentersHelper,
-        strategy: :helper }
-    end
-
-    def projects_controller_patch
-      { klass: ProjectsController,
-        patch: AdvancedPluginHelper::PresentersHelper,
-        strategy: :helper }
-    end
-
-    def queries_controller_patch
-      { klass: QueriesController,
+    def data_of(klass)
+      { klass: klass,
         patch: AdvancedPluginHelper::PresentersHelper,
         strategy: :helper }
     end
