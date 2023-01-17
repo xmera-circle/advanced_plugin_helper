@@ -21,27 +21,18 @@
 ##
 # Setup methods for this plugin.
 #
+# @note The PresentersHelper will be included into ActionView::Base
+#       in order to be available for all models by default.
+#
 module AdvancedPluginHelper
   class << self
     def setup
       AdvancedPluginHelper::Presenter.autoload
-      klasses.each do |klass|
-        AdvancedPluginHelper::Patch.register(data_of(klass))
-      end
+      presenters_helper = { klass: ActionView::Base,
+                            patch: AdvancedPluginHelper::PresentersHelper,
+                            strategy: :include }
+      AdvancedPluginHelper::Patch.register(presenters_helper)
       AdvancedPluginHelper::Patch.apply
-    end
-
-    def klasses
-      [ActionMailer::Base, ApplicationController, SettingsController,
-       ProjectsController, QueriesController, NewsController]
-    end
-
-    private
-
-    def data_of(klass)
-      { klass: klass,
-        patch: AdvancedPluginHelper::PresentersHelper,
-        strategy: :helper }
     end
   end
 end
