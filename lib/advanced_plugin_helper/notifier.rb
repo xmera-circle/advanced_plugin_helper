@@ -64,15 +64,15 @@ module AdvancedPluginHelper
         true
       end
 
-      private
+      def exception_recipients
+        -> { custom_or_default_recipients }
+      end
 
       def sender_address
         -> { custom_or_default_sender }
       end
 
-      def exception_recipients
-        -> { custom_or_default_recipients }
-      end
+      private
 
       def custom_or_default_sender
         %("#{app_title}" <#{mail_from}>)

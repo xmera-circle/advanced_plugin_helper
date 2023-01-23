@@ -24,7 +24,7 @@ Redmine::Plugin.register :advanced_plugin_helper do
   name 'Advanced Plugin Helper'
   author 'Liane Hampe, xmera Solutions GmbH'
   description 'Encapsulate presentation logic in PORO'
-  version '0.3.0'
+  version '0.3.1'
   url 'https://circle.xmera.de/projects/advanced-plugin-helper'
   author_url 'https://github.com/liaham'
 
