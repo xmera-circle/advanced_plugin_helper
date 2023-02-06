@@ -25,11 +25,22 @@ The `AdvancedPluginHelper::PresentersHelper` is added to `ActionView::Base`. The
 
 ### Redmine Patches
 
-Register your Redmine patches and make sure they will be loaded when the plugin is registered.
+Both patch methods below needs to be loaded when the plugin is registered.
+
+i) Register your Redmine patches.
 
 ```ruby
 data = { klass: Issue, patch: MyRedminePlugin::Extensions::IssuePatch, strategy: :include }
 AdvancedPluginHelper::Patch.register(data)
+```
+
+ii) Excecute code which will be loaded in Redmine 4 with `Rails.configuration.to_prepare` and Redmine 5 via `Redmine::Hook::ViewListener#after_plugins_loaded`.
+
+```ruby
+AdvancedPluginHelper::Patch.apply do
+  { klass: MyRedminePlugin::Prepare,
+    method: :do_something_very_early }
+end
 ```
 
 ### Exception Notifier

@@ -22,6 +22,9 @@ module AdvancedPluginHelper
   ##
   # AdvancedPluginHelper::Patch is the API to be used by Redmine plugin authors.
   #
+  # Redmine code manipulations will be loaded in dependence of the underlying
+  # Rails version.
+  #
   module Patch
     class << self
       ##
@@ -38,10 +41,22 @@ module AdvancedPluginHelper
         AdvancedPluginHelper::Patch::Registry.add(**data)
       end
 
-      def apply
+      ##
+      # @param block [Hash] Required keys are :klass and :method. The given klass
+      #                     will execute the given method in the corresponding
+      #                     'apply' method depending of the underlying Rails
+      #                     version.
+      #
+      # @example
+      #   AdvancedPluginHelper::Patch.apply do
+      #     { klass: ComputableCustomField::Configuration,
+      #       method: :add_supported_formulas }
+      #   end
+      #
+      def apply(&block)
         version = major(Rails.version)
-        klass = AdvancedPluginHelper::Patch::Compatability.find(version)
-        klass.apply
+        klass = AdvancedPluginHelper::Compatability::Prepare.find(version)
+        klass.apply(block)
       end
 
       private

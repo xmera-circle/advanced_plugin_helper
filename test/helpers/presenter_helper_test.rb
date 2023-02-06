@@ -29,7 +29,7 @@ module AdvancedPluginHelper
       data = AdvancedPluginHelper::Patch::Data.new(klass: ApplicationController,
                                                    patch: @patch,
                                                    strategy: :helper)
-      AdvancedPluginHelper::Patch::Compatability::Base.send(:add_patch, data)
+      AdvancedPluginHelper::Patch::Executor.send(:add_patch, data)
     end
 
     test 'should find PresentersHelper in ApplicationController' do

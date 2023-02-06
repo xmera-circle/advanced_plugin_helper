@@ -19,13 +19,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 module AdvancedPluginHelper
-  module Patch
+  module Compatability
     ##
     # The Compatability ensures the appropriate loading of patches in dependence
     # of the current Rails and Redmine version.
     # It assumes Rails.autoloaders.zeitwerk_enabled? ==> true.
     #
-    module Compatability
+    module Prepare
       class << self
         ##
         # @see https://github.com/rails/rails/blob/e74526814a4151b59cf6c5c9787adbb3c4fe49aa/activerecord/lib/active_record/migration/compatibility.rb
@@ -53,51 +53,52 @@ module AdvancedPluginHelper
       end
 
       ##
+      # Stores a given block.
+      # @example
+      #  AdvancedPluginHelper::Compatability::Prepare::V6.apply do
+      #    # this block here would be stored
+      #  end
+      #
+      class BlockStorage
+        class_attribute :block
+        self.block = []
+      end
+
+      ##
       # The base interface declaring the required methods.
       #
       class Base
         class << self
-          def apply
+          def apply(&block)
             raise NotImplementedError, "#{self.class.name}##{method_name} needs to be implemented"
           end
-
-          def add_registered_patches
-            AdvancedPluginHelper::Patch::Registry.all.each do |data|
-              add_patch(data)
-            end
-          end
-
-          private
-
-          def add_patch(data)
-            patch = data.patch
-            klass = data.klass
-            return if klass.included_modules.include?(patch)
-
-            klass.send(data.strategy, patch)
-          end
         end
       end
 
       ##
-      # Apply patches when running with Rails 5.
+      # Apply block when running with Rails 5.
       # :reek:UncommunicativeModuleName
       class V5 < Base
-        def self.apply
+        def self.apply(block)
           Rails.configuration.to_prepare do
-            Base.add_registered_patches
+            data = block.call
+            data[:klass].send data[:method]
           end
         end
       end
 
       ##
-      # Apply patches when running with Rails 6.
+      # Apply block when running with Rails 6.
       # :reek:UncommunicativeModuleName
       class V6 < Base
-        def self.apply
+        def self.apply(block)
+          BlockStorage.block << block.call
+
           Class.new(Redmine::Hook::ViewListener) do
             def after_plugins_loaded(_context = {})
-              Base.add_registered_patches
+              BlockStorage.block.each do |data|
+                data[:klass].send data[:method]
+              end
             end
           end
         end

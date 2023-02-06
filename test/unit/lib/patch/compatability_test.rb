@@ -31,15 +31,15 @@ module AdvancedPluginHelper
     end
 
     test 'should find class of given version' do
-      version_klass = AdvancedPluginHelper::Patch::Compatability.find('5')
-      assert_equal AdvancedPluginHelper::Patch::Compatability::V5, version_klass
+      version_klass = AdvancedPluginHelper::Compatability::Prepare.find('5')
+      assert_equal AdvancedPluginHelper::Compatability::Prepare::V5, version_klass
     end
 
     test 'should add patches' do
       values = { klass: TestKlass, patch: TestPatch, strategy: nil }
       data = AdvancedPluginHelper::Patch::Data.new(**values)
       assert_not data.klass.included_modules.include?(data.patch)
-      AdvancedPluginHelper::Patch::Compatability::Base.send(:add_patch, data)
+      AdvancedPluginHelper::Patch::Executor.send(:add_patch, data)
       assert data.klass.included_modules.include?(data.patch)
     end
   end
