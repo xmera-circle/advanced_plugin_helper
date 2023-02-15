@@ -20,12 +20,15 @@
 
 module ExceptionNotifier
   ##
-  # Custom mail notifier supporting procs for sender and recipients.
+  # Custom mail notifier supporting procs for sender and recipients and
+  # further sections providing environment information as deliverd with
+  # 'bin/about'.
   #
   class CustomMailNotifier < EmailNotifier
     def call(exception, options = {})
       @base_options[:sender_address] = try_proc(@base_options[:sender_address])
       @base_options[:exception_recipients] = try_proc(@base_options[:exception_recipients])
+      @base_options[:sections] = try_proc(@base_options[:sections])
       super
     end
 
