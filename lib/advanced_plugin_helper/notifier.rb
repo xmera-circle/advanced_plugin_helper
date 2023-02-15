@@ -45,66 +45,100 @@ module AdvancedPluginHelper
   # You can also disable the notifier via EXCEPTION_NOTIFIER_DISABLED (default: false).
   #
   module Notifier
-    class << self
-      def email_delivery_enabled?
-        !!ActionMailer::Base.perform_deliveries
-      end
+    ##
+    # Default exception report sections are
+    # request, session, environment, backtrace. The last two
+    # however, are ommited since they are less meaningful.
+    #
+    # The additonal section 'about' gives the same
+    # information as retrieved with 'bin/about'.
+    #
+    # @see app/views/exception_notifier/_about.text.erb
+    #
+    # You can easyly extend the report by adding a further
+    # section: AdvancedPluginHelper::Notifier.sections << (my_section)
+    # and creating a partial as done for the about section.
+    #
+    mattr_accessor :sections
+    self.sections = %w[backtrace request about]
 
-      def custom_mail
-        { email_prefix: '[Exception] ',
-          sender_address: sender_address,
-          exception_recipients: exception_recipients }
-      end
+    ##
+    # Assign a comma separated list of email recipients maintaining
+    # the system.
+    #
+    mattr_accessor :default_exception_recipients, instance_reader: false
 
-      def disabled?
-        ENV.fetch('EXCEPTION_NOTIFIER_DISABLED', false)
-      end
+    def self.default_exception_recipients
+      class_variable_get(:@@default_exception_recipients) || ENV.fetch('DEFAULT_EXCEPTION_NOTIFIER_RECIPIENTS', nil)
+    end
 
-      def error_grouping
-        true
-      end
+    ##
+    # Read environment variable for notifier recipient customization.
+    #
+    mattr_accessor :custom_exception_recipients, instance_reader: false
+    def self.custom_exception_recipients
+      class_variable_get(:@@custom_exception_recipients) || ENV.fetch('EXCEPTION_NOTIFIER_RECIPIENTS', nil)
+    end
 
-      def exception_recipients
-        -> { custom_or_default_recipients }
-      end
+    ##
+    # Define the main variable which should hold all relevant recipients to
+    # be called by exception_recipients below.
+    #
+    # @note The assignment will be done in lib/advanced_plugin_helper.rb.
+    #
+    #
+    mattr_accessor :custom_or_default_recipients, instance_reader: false
 
-      def sender_address
-        -> { custom_or_default_sender }
-      end
+    mattr_accessor :disabled, instance_reader: false
+    def self.disabled?
+      class_variable_get(:@@disabled) || ENV.fetch('EXCEPTION_NOTIFIER_DISABLED', false)
+    end
 
-      private
+    def self.custom_or_default_recipients
+      "#{custom_exception_recipients}, #{default_exception_recipients}"
+    end
 
-      def custom_or_default_sender
-        %("#{app_title}" <#{mail_from}>)
-      end
+    def self.email_delivery_enabled?
+      !!ActionMailer::Base.perform_deliveries
+    end
 
-      def custom_or_default_recipients
-        [custom_exception_recipients || admin_mails]
-      end
+    def self.custom_mail
+      { email_prefix: '[Exception] ',
+        sender_address: sender_address,
+        exception_recipients: exception_recipients,
+        sections: sections }
+    end
 
-      def custom_exception_recipients
-        ENV.fetch('EXCEPTION_NOTIFIER_RECIPIENTS', nil)
-      end
+    def self.error_grouping
+      true
+    end
 
-      def mail_from
-        custom_mail_from || setting(:mail_from)
-      end
+    def self.exception_recipients
+      -> { custom_or_default_recipients }
+    end
 
-      def admin_mails
-        User.admin.map(&:mail)
-      end
+    def self.sender_address
+      -> { custom_or_default_sender }
+    end
 
-      def app_title
-        setting(:app_title)
-      end
+    def self.custom_or_default_sender
+      %("#{app_title}" <#{mail_from}>)
+    end
 
-      def custom_mail_from
-        ENV.fetch('EXCEPTION_NOTIFIER_SENDER', nil)
-      end
+    def self.mail_from
+      custom_mail_from || setting(:mail_from)
+    end
 
-      def setting(attr)
-        Setting.send attr
-      end
+    def self.app_title
+      setting(:app_title)
+    end
+
+    def self.custom_mail_from
+      ENV.fetch('EXCEPTION_NOTIFIER_SENDER', nil)
+    end
+
+    def self.setting(attr)
+      Setting.send attr
     end
   end
 end
