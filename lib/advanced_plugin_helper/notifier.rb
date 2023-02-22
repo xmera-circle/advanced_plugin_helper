@@ -32,15 +32,16 @@ module AdvancedPluginHelper
   #   if AdvancedPluginHelper::Notifier.email_delivery_enabled?
   #     config.add_notifier :custom_mail, AdvancedPluginHelper::Notifier.custom_mail
   #     config.error_grouping = AdvancedPluginHelper::Notifier.error_grouping
-  #     config.ignore_if do |exception, options|
+  #     config.ignore_if do |_exception, _options|
   #       AdvancedPluginHelper::Notifier.disabled?
   #     end
   #   end
   # end
   #
   # In order to configure sender and recipients set the corresponding env vars:
+  # DEFAULT_EXCEPTION_NOTIFIER_RECIPIENTS (default: nil)
   # EXCEPTION_NOTIFIER_SENDER (default: Setting.mail_from as set in Administration » Setting » Email notifications)
-  # EXCEPTION_NOTIFIER_RECIPIENTS (default: Mail addresses of all admins)
+  # EXCEPTION_NOTIFIER_RECIPIENTS (default: nil)
   #
   # You can also disable the notifier via EXCEPTION_NOTIFIER_DISABLED (default: false).
   #
