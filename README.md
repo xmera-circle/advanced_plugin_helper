@@ -2,7 +2,7 @@
 
 Encapsulate presentation logic and Redmine patch management in PORO
 
-![Redmine Plugin Version](https://img.shields.io/badge/Redmine_Plugin-v0.3.1-red) ![Redmine Version](https://img.shields.io/badge/Redmine-v5.0.x-blue) ![Language Support](https://img.shields.io/badge/Languages-en,_de-green) ![Version Stage](https://img.shields.io/badge/Stage-release-important)
+![Redmine Plugin Version](https://img.shields.io/badge/Redmine_Plugin-v0.4.0-red) ![Redmine Version](https://img.shields.io/badge/Redmine-v5.0.z-blue) ![Language Support](https://img.shields.io/badge/Languages-en,_de-green) ![Version Stage](https://img.shields.io/badge/Stage-release-important)
 
 The Advanced Plugin Helper plugin is a Redmine plugin for developers. It is helping to keep Rails helper and views light in favour of encapsulating presentation login in plain old ruby classes (PORO). It also provides a Patch API to easily register Redmine patches for Redmine 4 or 5 as well as an exception notifier.
 
