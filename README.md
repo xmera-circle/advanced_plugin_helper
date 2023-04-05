@@ -2,7 +2,7 @@
 
 Encapsulate presentation logic and Redmine patch management in PORO
 
-![Redmine Plugin Version](https://img.shields.io/badge/Redmine_Plugin-v0.3.1-red) ![Redmine Version](https://img.shields.io/badge/Redmine-v5.0.x-blue) ![Language Support](https://img.shields.io/badge/Languages-en,_de-green) ![Version Stage](https://img.shields.io/badge/Stage-release-important)
+![Redmine Plugin Version](https://img.shields.io/badge/Redmine_Plugin-v0.4.0-red) ![Redmine Version](https://img.shields.io/badge/Redmine-v5.0.z-blue) ![Language Support](https://img.shields.io/badge/Languages-en,_de-green) ![Version Stage](https://img.shields.io/badge/Stage-release-important)
 
 The Advanced Plugin Helper plugin is a Redmine plugin for developers. It is helping to keep Rails helper and views light in favour of encapsulating presentation login in plain old ruby classes (PORO). It also provides a Patch API to easily register Redmine patches for Redmine 4 or 5 as well as an exception notifier.
 
@@ -25,11 +25,22 @@ The `AdvancedPluginHelper::PresentersHelper` is added to `ActionView::Base`. The
 
 ### Redmine Patches
 
-Register your Redmine patches and make sure they will be loaded when the plugin is registered.
+Both patch methods below needs to be loaded when the plugin is registered.
+
+i) Register your Redmine patches.
 
 ```ruby
 data = { klass: Issue, patch: MyRedminePlugin::Extensions::IssuePatch, strategy: :include }
 AdvancedPluginHelper::Patch.register(data)
+```
+
+ii) Excecute code which will be loaded in Redmine 4 with `Rails.configuration.to_prepare` and Redmine 5 via `Redmine::Hook::ViewListener#after_plugins_loaded`.
+
+```ruby
+AdvancedPluginHelper::Patch.apply do
+  { klass: MyRedminePlugin::Prepare,
+    method: :do_something_very_early }
+end
 ```
 
 ### Exception Notifier

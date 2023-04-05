@@ -2,7 +2,7 @@
 
 # This file is part of the Advanced Plugin Helper plugin.
 #
-# Copyright (C) 2022-2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
+# Copyright (C) 2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
 #
 # This plugin program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,17 +18,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require File.expand_path('lib/advanced_plugin_helper', __dir__)
+module AdvancedPluginHelper
+  module Patch
+    module Executor
+      class << self
+        def add_registered_patches
+          AdvancedPluginHelper::Patch::Registry.all.each do |data|
+            add_patch(data)
+          end
+        end
 
-Redmine::Plugin.register :advanced_plugin_helper do
-  name 'Advanced Plugin Helper'
-  author 'Liane Hampe, xmera Solutions GmbH'
-  description 'Encapsulate presentation logic in PORO'
-  version '0.4.0'
-  url 'https://circle.xmera.de/projects/advanced-plugin-helper'
-  author_url 'https://github.com/liaham'
+        private
 
-  requires_redmine version_or_higher: '4.2.0'
+        def add_patch(data)
+          patch = data.patch
+          klass = data.klass
+
+          return if klass.included_modules.include?(patch)
+
+          klass.send(data.strategy, patch)
+        end
+      end
+    end
+  end
 end
-
-AdvancedPluginHelper.setup

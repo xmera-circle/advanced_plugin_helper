@@ -32,7 +32,11 @@ module AdvancedPluginHelper
                             patch: AdvancedPluginHelper::PresentersHelper,
                             strategy: :include }
       AdvancedPluginHelper::Patch.register(presenters_helper)
-      AdvancedPluginHelper::Patch.apply
+
+      AdvancedPluginHelper::Patch.apply do
+        { klass: AdvancedPluginHelper::Patch::Executor,
+          method: :add_registered_patches }
+      end
     end
   end
 end

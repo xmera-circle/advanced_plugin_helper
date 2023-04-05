@@ -2,7 +2,7 @@
 
 # This file is part of the Advanced Plugin Helper plugin.
 #
-# Copyright (C) 2022-2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
+# Copyright (C) 2023 Liane Hampe <liaham@xmera.de>, xmera Solutions GmbH.
 #
 # This plugin program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,17 +18,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-require File.expand_path('lib/advanced_plugin_helper', __dir__)
-
-Redmine::Plugin.register :advanced_plugin_helper do
-  name 'Advanced Plugin Helper'
-  author 'Liane Hampe, xmera Solutions GmbH'
-  description 'Encapsulate presentation logic in PORO'
-  version '0.4.0'
-  url 'https://circle.xmera.de/projects/advanced-plugin-helper'
-  author_url 'https://github.com/liaham'
-
-  requires_redmine version_or_higher: '4.2.0'
+module AdvancedPluginHelper
+  module Associations
+    class << self
+      ##
+      # @param subklass [Object] A subclass of an ActiveRecord Model class. The
+      #                          superclass has some associations which should be
+      #                          available to the given subclass.
+      #
+      def register(subklass)
+        data = { klass: subklass,
+                 patch: AdvancedPluginHelper::Associations::SubclassPatch,
+                 strategy: :include }
+        AdvancedPluginHelper::Patch.register(data)
+      end
+    end
+  end
 end
-
-AdvancedPluginHelper.setup
